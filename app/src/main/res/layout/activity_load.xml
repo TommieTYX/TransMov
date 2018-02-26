@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="mhci.transmov.LoadActivity">
+    <RelativeLayout
+        android:id="@+id/loadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center" >
+
+        <ProgressBar
+            android:layout_width="200dip"
+            android:layout_height="20dip"
+            android:indeterminate="false"
+            android:id="@+id/LoadBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:progressDrawable="@drawable/barprogress" />
+
+        <TextView
+            android:layout_width="195dip"
+            android:layout_height="15dip"
+            android:layout_alignBottom="@id/LoadBar"
+            android:layout_alignLeft="@id/LoadBar"
+            android:layout_alignRight="@id/LoadBar"
+            android:layout_alignTop="@id/LoadBar"
+            android:background="#00000000"
+            android:paddingLeft="70dip"
+            android:text="Loading"
+            android:textColor="@android:color/background_light"
+            android:textStyle="bold" />
+    </RelativeLayout>
+</android.support.constraint.ConstraintLayout>

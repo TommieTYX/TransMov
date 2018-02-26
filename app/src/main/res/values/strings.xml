@@ -1,6 +1,13 @@
 <resources>
-    <string name="app_name">TransMov</string>
+    <string name="app_name">mTranslate</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="mainContent">Ever fancy having the idea of being able to see details of a movie that is in a foreign language? \n\n
+        Get started now with a one-click snap of the movie poster now!</string>
+    <string name="translateBtn">Start Translate</string>
+    <string name="dialog_prompt">Choose Photo</string>
+    <string name="dialog_camera">Camera</string>
+    <string name="dialog_gallery">Gallery</string>
+    <string name="image_error">Error: Please pick a different one.</string>
 </resources>
