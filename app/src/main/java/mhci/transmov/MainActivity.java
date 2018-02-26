@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -161,34 +162,7 @@ public class MainActivity extends AppCompatActivity {
                 bitmap =
                         scaleBitmapDown(
                                 MediaStore.Images.Media.getBitmap(getContentResolver(), uri),
-                                1200);
-
-                /*Thread welcomeThread = new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            super.run();
-                            showProgress(true);
-                            Log.i(TAG,"entered progress loading");
-                            sleep(5000);  //Delay of 10 seconds
-                        } catch (Exception e) {
-                            Log.i(TAG,"entered error: "+e);
-                        } finally {
-                            Log.i(TAG,"entered end thread");
-                            ByteArrayOutputStream bitStream = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bitStream);
-                            byte[] bitByteArray = bitStream.toByteArray();
-                            showProgress(false);
-                            startMyActivity(bitByteArray);
-                            finish();
-                        }
-                    }
-                };
-                welcomeThread.start();*/
-
-                //callCloudVision(bitmap);
-                //mMainImage.setImageBitmap(bitmap);
-
+                                600);
             } catch (IOException e) {
                 stop = true;
                 timerCount = 0;
@@ -216,10 +190,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void startMyActivity( byte[] bitByteArray)
+    public void startMyActivity(byte[] byteArray)
     {
         Intent intent = new Intent(MainActivity.this, ResultActivity.class);
-        //intent.putExtra("image", bitByteArray);
+        intent.putExtra("image", byteArray);
         startActivity(intent);
     }
 
@@ -242,11 +216,11 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     timerCount = 0;
                     Log.i(TAG,"entered end thread");
-                    ByteArrayOutputStream bitStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, bitStream);
-                    byte[] bitByteArray = bitStream.toByteArray();
                     showProgress(false);
-                    startMyActivity(bitByteArray);
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                    byte[] byteArray = stream.toByteArray();
+                    startMyActivity(byteArray);
                 }
             }
         }

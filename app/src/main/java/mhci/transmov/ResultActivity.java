@@ -44,13 +44,21 @@ public class ResultActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
-        //Bundle extras = getIntent().getExtras();
-        //byte[] byteArray = extras.getByteArray("image");
+        Bundle extras = getIntent().getExtras();
+        byte[] byteArray = extras.getByteArray("image");
+
+        Bitmap bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
 
        // Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         ImageView image = (ImageView) findViewById(R.id.result_image);
 
-        //image.setImageBitmap(bmp);
+        image.setImageBitmap(bitmap);
+
+        try {
+            callCloudVision(bitmap);
+        } catch (IOException e) {
+            Log.i(TAG,"error is: "+e);
+        }
     }
 
     @Override
@@ -170,6 +178,7 @@ public class ResultActivity extends AppCompatActivity {
             message += "nothing";
         }
 
+        Log.i(TAG,"message is: "+message);
         return message;
     }
 }
