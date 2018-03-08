@@ -31,10 +31,10 @@ public class OmdbHelper {
         HttpsURLConnection myConnection = null;
 
         movieName.replace("poster", "").trim().replace(' ', '+').trim();
-        Log.i("WTF IS MY MOVIE NAME", movieName);
-
+        Log.i("**********************", movieName); //TODO: REMOVE THIS
         try {
-            httpbinEndpoint = new URL("https://www.omdbapi.com/?t="+ movieName +"&apikey=6c6c7fd");
+            //httpbinEndpoint = new URL("https://www.omdbapi.com/?t="+ movieName +"&apikey=6c6c7fd"); //TODO: FIX THIS
+            httpbinEndpoint = new URL("https://www.omdbapi.com/?t=furious+7&apikey=6c6c7fd");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -56,12 +56,11 @@ public class OmdbHelper {
                 jsonReader.beginObject(); // Start processing the JSON object
                 while (jsonReader.hasNext()) { // Loop through all keys
                     String key = jsonReader.nextName(); // Fetch the next key
-                    if (key.equals("Title")) { // Check if desired key
+                    if (key.equals("Title") || key.equals("Rated") || key.equals("Year") ||
+                            key.equals("Released") || key.equals("Runtime") || key.equals("Genre") ||
+                            key.equals("Director") || key.equals("Actors") || key.equals("Plot")) { // Check if desired key
                         // Fetch the value as a String
-                        result.put("title", jsonReader.nextString());
-                    } else if (key.equals("Rated")) { // Check if desired key
-                        // Fetch the value as a String
-                        result.put("rated", jsonReader.nextString());
+                        result.put(key, jsonReader.nextString());
                     } else {
                         jsonReader.skipValue(); // Skip values of other keys
                     }
