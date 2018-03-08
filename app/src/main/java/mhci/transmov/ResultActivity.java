@@ -1,16 +1,20 @@
 package mhci.transmov;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.StrictMode;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -21,17 +25,34 @@ import com.google.api.services.vision.v1.Vision;
 import com.google.api.services.vision.v1.VisionRequest;
 import com.google.api.services.vision.v1.VisionRequestInitializer;
 import com.google.api.services.vision.v1.model.AnnotateImageRequest;
+import com.google.api.services.vision.v1.model.AnnotateImageResponse;
 import com.google.api.services.vision.v1.model.BatchAnnotateImagesRequest;
 import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
 import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
+import com.google.api.services.vision.v1.model.WebEntity;
+import com.google.api.services.vision.v1.model.WebLabel;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
+
+import org.apache.http.Header;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class ResultActivity extends AppCompatActivity {
     final private String TAG = "ResultActivity";
@@ -43,6 +64,11 @@ public class ResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
+
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
 
         Bundle extras = getIntent().getExtras();
         byte[] byteArray = extras.getByteArray("image");
@@ -80,6 +106,7 @@ public class ResultActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void callCloudVision(final Bitmap bitmap) throws IOException {
         // Switch text to loading
 
@@ -129,10 +156,9 @@ public class ResultActivity extends AppCompatActivity {
                         base64EncodedImage.encodeContent(imageBytes);
                         annotateImageRequest.setImage(base64EncodedImage);
 
-                        // add the features we want
                         annotateImageRequest.setFeatures(new ArrayList<Feature>() {{
                             Feature labelDetection = new Feature();
-                            labelDetection.setType("DOCUMENT_TEXT_DETECTION");
+                            labelDetection.setType("WEB_DETECTION");
                             labelDetection.setMaxResults(10);
                             add(labelDetection);
                         }});
@@ -161,14 +187,26 @@ public class ResultActivity extends AppCompatActivity {
 
             protected void onPostExecute(String result) {
                /// mImageDetails.setText(result);
+                TextView resultText = (TextView)findViewById(R.id.resultText);
+                //resultText.setText(result);
+                //OmdbHelper.get();
+                Map<String, String> m = OmdbHelper.get(result);
+                //String title = m
+                //Log.i("ASDASDASDASDASD", OmdbHelper.get(result).get("title"));
+
+                if (!m.isEmpty()){
+                    resultText.setText(m.get("title") + " -- " + m.get("rated"));
+                } else {
+                    resultText.setText("THIS WAS THE BEST GUESS: " + result);// + m.get("rated").toString());
+                }
             }
         }.execute();
     }
 
     private String convertResponseToString(BatchAnnotateImagesResponse response) {
-        String message = "I found these things:\n\n";
+        String message = "";
 
-        List<EntityAnnotation> labels = response.getResponses().get(0).getTextAnnotations();
+        /*List<EntityAnnotation> labels = response.getResponses().get(0).getTextAnnotations();
         if (labels != null) {
             for (EntityAnnotation label : labels) {
                 message += String.format(Locale.US, "%.3f: %s", label.getScore(), label.getDescription());
@@ -178,7 +216,42 @@ public class ResultActivity extends AppCompatActivity {
             message += "nothing";
         }
 
-        Log.i(TAG,"message is: "+message);
+        Log.i(TAG,"message is: "+message);*/
+
+
+
+
+
+        AnnotateImageResponse imageResponses = response.getResponses().get(0);
+
+        for (AnnotateImageResponse i : response.getResponses()){
+            Log.i("YX RES: ", i.toString());
+        }
+
+        List<WebLabel> entityAnnotations;
+
+        //entityAnnotations = imageResponses.getLabelAnnotations();
+        entityAnnotations = imageResponses.getWebDetection().getBestGuessLabels();
+        if (entityAnnotations != null) {
+            for (WebLabel entity : entityAnnotations) {
+                message += entity.getLabel();// + "      " + entity.getLanguageCode() + "\r\n";
+                //message += "\n";
+            }
+        } else {
+            message = "Nothing Found";
+        }
+
+
         return message;
+    }
+
+    private String getMovieInfo(String movieName) throws IOException {
+        Log.i("OMDB: ", movieName);
+        String response = "";
+
+
+
+
+        return response;
     }
 }

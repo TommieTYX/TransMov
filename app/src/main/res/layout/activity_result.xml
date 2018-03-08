@@ -12,4 +12,16 @@
         android:layout_height="200dp"
         android:rotation="90"
         android:scaleType="fitCenter" />
+
+    <TextView
+        android:id="@+id/resultText"
+        android:layout_width="378dp"
+        android:layout_height="364dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.484"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.933" />
+
 </android.support.constraint.ConstraintLayout>
