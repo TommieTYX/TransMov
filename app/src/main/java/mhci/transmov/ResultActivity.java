@@ -13,6 +13,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -107,14 +109,19 @@ public class ResultActivity extends AppCompatActivity {
 
         final Locale[] locales = Locale.getAvailableLocales();
         int defaultLocaleId = 0;
-
+        int count = 0;
         ArrayList<String> localcountries=new ArrayList<String>();
         for(Locale l:locales)
         {
-            localcountries.add(l.getDisplayLanguage().toString());
-            if (l.equals(Resources.getSystem().getConfiguration().locale)){
-                defaultLocaleId = localcountries.size() - 1;
+            if(!localcountries.contains(l.getDisplayLanguage().toString()))
+            {
+                localcountries.add(l.getDisplayLanguage().toString());
+                if (l.equals(Resources.getSystem().getConfiguration().locale)){
+                    //defaultLocaleId = localcountries.size() - 1;
+                    defaultLocaleId = count - 1;
+                }
             }
+            count++;
         }
         String[] languages=(String[]) localcountries.toArray(new String[localcountries.size()]);
 
@@ -123,13 +130,14 @@ public class ResultActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, languages);
         langSelect.setAdapter(adapter);
 
-        langSelect.setSelection(defaultLocaleId);
+        langSelect.setSelection(adapter.getPosition(localcountries.get(defaultLocaleId)));
 
         langSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String item = parent.getItemAtPosition(position).toString();
-                //translateInfo(m, locales[position].toString()); //TODO: FIX THIS
-                //Log.i("ASDKJAHSDAHSJAD", locales[position].toString());
+                if (m!=null){
+                    translateInfo(m, locales[position].toString().split("_")[0]);
+                }
             }
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -245,10 +253,10 @@ public class ResultActivity extends AppCompatActivity {
 
             protected void onPostExecute(String result) {
                /// mImageDetails.setText(result);
+                TextView title = (TextView)findViewById(R.id.titleTxt);
                 TextView director = (TextView)findViewById(R.id.directorTxt);
                 TextView actor = (TextView)findViewById(R.id.actorTxt);
-                TextView plot = (TextView)findViewById(R.id.plotTxt);
-                TextView movieDetail = (TextView)findViewById(R.id.movieDetail);
+
 
                 m = OmdbHelper.get(result);
 
@@ -262,18 +270,30 @@ public class ResultActivity extends AppCompatActivity {
                 moviePlot = m.get("Plot");
 
                 if (!m.isEmpty()){
-                    if (deviceLocale.contains("en")){
-                        translateInfo(m, "de"); //TODO: change to defaultLocale
+                    if (!deviceLocale.contains("en")){
+                        translateInfo(m, deviceLocale);
+                    }else{
+                        TextView plot = (TextView)findViewById(R.id.plotTxt);
+                        TextView movieDetail = (TextView)findViewById(R.id.movieDetail);
+                        movieDetail.setText(movieInfo);
+                        plot.setText(moviePlot);
+                        plot.setMovementMethod(new ScrollingMovementMethod());
                     }
 
 
-                    movieDetail.setText(movieInfo);
+                    title.setText(m.get("Title"));
+                    //movieDetail.setText(movieInfo);
                     director.setText(m.get("Director"));
                     actor.setText(m.get("Actors"));
-                    plot.setText(moviePlot);
+                    //plot.setText(moviePlot);
 
                 } else {
-                    movieDetail.setText("THIS WAS THE BEST GUESS: " + result);// + m.get("rated").toString());
+                    Toast.makeText(ResultActivity.this, "No Result Found! Please Try Again!",Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(ResultActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+
+                    //movieDetail.setText("THIS WAS THE BEST GUESS: " + result);// + m.get("rated").toString());
                 }
                 showProgress(false);
             }
@@ -322,11 +342,18 @@ public class ResultActivity extends AppCompatActivity {
     }
 
     public void translateInfo(Map m, String locale){
+        TextView plot = (TextView)findViewById(R.id.plotTxt);
+        TextView movieDetail = (TextView)findViewById(R.id.movieDetail);
+
         movieInfo = translateText("Year: " + m.get("Year"), locale) + "\r\n" +
                 translateText("Released: " + m.get("Released"), locale) + "\r\n" +
                 translateText("Run-Time: " + m.get("Runtime"), locale) + "\r\n" +
                 translateText("Rated: " + m.get("Rated"), locale);
 
         moviePlot = translateText(moviePlot, locale);
+
+        movieDetail.setText(movieInfo);
+        plot.setText(moviePlot);
+        plot.setMovementMethod(new ScrollingMovementMethod());
     }
 }

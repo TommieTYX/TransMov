@@ -30,11 +30,10 @@ public class OmdbHelper {
         URL httpbinEndpoint = null;
         HttpsURLConnection myConnection = null;
 
-        movieName.replace("poster", "").trim().replace(' ', '+').trim();
-        Log.i("**********************", movieName); //TODO: REMOVE THIS
+        String mn = movieName.replace("poster", "").trim().replace(' ', '+').trim();
+
         try {
-            //httpbinEndpoint = new URL("https://www.omdbapi.com/?t="+ movieName +"&apikey=6c6c7fd"); //TODO: FIX THIS
-            httpbinEndpoint = new URL("https://www.omdbapi.com/?t=furious+7&apikey=6c6c7fd");
+            httpbinEndpoint = new URL("https://www.omdbapi.com/?t="+ mn +"&apikey=6c6c7fd&plot=full");
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

@@ -3,8 +3,8 @@
     <item android:state_pressed="true" >
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="rectangle">
-            <gradient android:startColor="#69f0ae"
-                android:endColor="#69f0ae"
+            <gradient android:startColor="#489075"
+                android:endColor="#489075"
                 android:angle="270" />
             <corners android:radius="3dp" />
             <stroke android:width="5px" android:color="#FFFFFF" />
@@ -13,11 +13,10 @@
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android"
             android:shape="rectangle">
-            <gradient android:startColor="#FFFFFF"
-                android:endColor="#FFFFFF"
+            <gradient android:startColor="#489075"
+                android:endColor="#489075"
                 android:angle="270" />
-            <corners android:radius="3dp" />
-            <stroke android:width="5px" android:color="#69f0ae" />
+            <stroke android:width="5px" android:color="#489075" />
         </shape>
     </item>
 </selector>

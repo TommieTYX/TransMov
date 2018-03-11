@@ -44,7 +44,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_bg"
-            android:text="@string/translateBtn" />
+            android:text="@string/translateBtn"
+            android:textColor="@android:color/white" />
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
